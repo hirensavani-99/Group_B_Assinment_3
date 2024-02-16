@@ -49,6 +49,8 @@ func handleAddItem(w http.ResponseWriter, r *http.Request) {
 
 // Get list of Items from storage
 func handleGetItem(w http.ResponseWriter, r *http.Request) {
+
+	//Request type is not get
 	if r.Method != http.MethodGet {
 		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
