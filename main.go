@@ -1,6 +1,11 @@
 package main
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+)
 
 // Item represents an item with ID, Name, Description, and Price
 type Item struct {
@@ -11,13 +16,36 @@ type Item struct {
 }
 
 // ItemStorage represents the in-memory storage for items
-type ItemStorage struct {
-	Items []Item
+
+var items []Item
+
+
+//common function for response writing 
+func respondWithError(w http.ResponseWriter, code int, message string) {
+	w.WriteHeader(code)
+	fmt.Fprintf(w, message)
 }
 
 //Adding Items to storage
 func handleAddItem(w http.ResponseWriter, r *http.Request) {
 
+	//if method is not post request 
+	if r.Method != http.MethodPost {
+		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+	//body not allowed
+	var newItem Item
+	if err := json.NewDecoder(r.Body).Decode(&newItem); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Malformed request body")
+		return
+	}
+
+	newItem.ID = fmt.Sprintf("item%d", len(items)+1)
+	items = append(items, newItem)
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(newItem)
 }
 
 //Get list of Items from storage
@@ -26,4 +54,8 @@ func handleGetItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	http.HandleFunc("/post/items", handleAddItem)
+	http.HandleFunc("/get/items", handleGetItem)
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
