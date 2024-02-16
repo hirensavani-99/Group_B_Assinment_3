@@ -19,17 +19,16 @@ type Item struct {
 
 var items []Item
 
-
-//common function for response writing 
+// common function for response writing
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	w.WriteHeader(code)
 	fmt.Fprintf(w, message)
 }
 
-//Adding Items to storage
+// Adding Items to storage
 func handleAddItem(w http.ResponseWriter, r *http.Request) {
 
-	//if method is not post request 
+	//if method is not post request
 	if r.Method != http.MethodPost {
 		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
@@ -48,8 +47,15 @@ func handleAddItem(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newItem)
 }
 
-//Get list of Items from storage
+// Get list of Items from storage
 func handleGetItem(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(items)
 
 }
 
