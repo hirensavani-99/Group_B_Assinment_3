@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,45 @@ import (
 func TestAddItemHandlerPositive(t *testing.T) {
 
 	//create a item to be added , make a post request and check responses for positive case (201 & expcted Item in list )
+	newItem := Item{
+		Name:        "New Item",
+		Description: "Description of New Item",
+		Price:       15.23,
+	}
+
+	// Encode the new item as JSON
+	jsonData, err := json.Marshal(newItem)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a POST request to add the item
+	req, err := http.NewRequest("POST", "/post/items", bytes.NewBuffer(jsonData))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a response recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call the handler function with the POST request
+	handleAddItem(rr, req)
+
+	// Check if the status code is 201 (Created)
+	if rr.Code != http.StatusCreated {
+		t.Errorf("Expected status code %d, got %d", http.StatusCreated, rr.Code)
+	}
+
+	// Decode the response body into an Item struct
+	var responseItem Item
+	if err := json.NewDecoder(rr.Body).Decode(&responseItem); err != nil {
+		t.Fatal(err)
+	}
+
+	// Check if the returned item matches the added item
+	if responseItem.Name != newItem.Name || responseItem.Description != newItem.Description || responseItem.Price != newItem.Price {
+		t.Errorf("Expected item %+v, got %+v", newItem, responseItem)
+	}
 
 }
 
