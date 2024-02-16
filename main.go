@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // Item represents an item with ID, Name, Description, and Price
@@ -17,12 +19,12 @@ type Item struct {
 
 // ItemStorage represents the in-memory storage for items
 
-var items []Item
+var items = []Item{}
 
 // common function for response writing
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	w.WriteHeader(code)
-	fmt.Fprintf(w, message)
+	fmt.Print(w, message)
 }
 
 // Adding Items to storage
@@ -40,7 +42,7 @@ func handleAddItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newItem.ID = fmt.Sprintf("item%d", len(items)+1)
+	newItem.ID = uuid.New().String() // Generate a unique ID for the item
 	items = append(items, newItem)
 
 	w.WriteHeader(http.StatusCreated)
