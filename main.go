@@ -58,6 +58,11 @@ func handleGetItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Handle GET requests to /get/items
+	if r.URL.Path != "/get/items" {
+		http.NotFound(w, r)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(items)
 

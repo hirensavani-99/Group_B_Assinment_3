@@ -55,7 +55,7 @@ func TestAddItemHandlerPositive(t *testing.T) {
 }
 
 // for negative
-func TestAddItemHandlerNagative(t *testing.T) {
+func TestAddItemHandlerNegative(t *testing.T) {
 
 	//create a item to be added with invalid json , make a post request and check responses for negative case (status code accordingly )
 	invalidJSON := []byte(`{"name": "New Item", "description": "Description of New Item", "price": "invalid_price"}`)
@@ -129,24 +129,21 @@ func TestGetItemHandlerPositive(t *testing.T) {
 	}
 }
 
-func TestGetItemHandlerNagative(t *testing.T) {
-	// create get request with invalid url and look for negative response from server
-	// Create a GET request with an invalid URL
-	req, err := http.NewRequest("GET", "/invalid/url", nil)
+func TestGetItemHandlerNegative(t *testing.T) {
+	// Create a GET request
+	req, err := http.NewRequest("GET", "/get/nonexistent", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Create a response recorder to record the response
+	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	// Call the handler function with the GET request
 	handleGetItem(rr, req)
 
-	// Check if the status code is 404 (Not Found) for an invalid URL
+	// Check if the status code is 404 (Not Found) for a non-existent resource
 	if rr.Code != http.StatusNotFound {
 		t.Errorf("Expected status code %d, got %d", http.StatusNotFound, rr.Code)
 	}
-	//GET request is invalid
-	//404 Invalid URL as Response
 }
