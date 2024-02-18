@@ -21,6 +21,8 @@ type Item struct {
 
 var items = []Item{}
 
+const port = ":8080"
+
 // common function for response writing
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	w.WriteHeader(code)
@@ -65,5 +67,7 @@ func main() {
 	http.HandleFunc("/post/items", handleAddItem)
 	http.HandleFunc("/get/items", handleGetItem)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Printf("The server is running at port #%v", port)
+
+	log.Fatal(http.ListenAndServe(port, nil))
 }
