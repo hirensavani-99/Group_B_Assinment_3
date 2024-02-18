@@ -69,7 +69,7 @@ func handleGetItem(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Get list of Items from storage
+// Get item by the id from the `Items`
 func getItemById(w http.ResponseWriter, r *http.Request) {
 
 	id := strings.TrimPrefix(r.URL.Path, "/get/itemById/")
