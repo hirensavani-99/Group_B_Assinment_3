@@ -51,32 +51,19 @@ func handleAddItem(w http.ResponseWriter, r *http.Request) {
 
 // Get list of Items from storage
 func handleGetItem(w http.ResponseWriter, r *http.Request) {
-
-	switch r.Method {
-	case "GET":
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(items)
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-
 	if r.Method != http.MethodGet {
 		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
 	}
-	/*
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(items)
-	*/
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(items)
+
 }
 
 func main() {
-	//	http.HandleFunc("/post/items", handleAddItem)
+	http.HandleFunc("/post/items", handleAddItem)
+	http.HandleFunc("/get/items", handleGetItem)
 
-	// GET API to show the data on screen
-	http.HandleFunc("/items/", handleGetItem)
-
-	// Showing a message on screen that the server is running.
-	fmt.Println("Server is starting.")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
