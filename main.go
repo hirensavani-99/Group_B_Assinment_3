@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -68,9 +69,41 @@ func handleGetItem(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Get list of Items from storage
+func getItemById(w http.ResponseWriter, r *http.Request) {
+
+	id := strings.TrimPrefix(r.URL.Path, "/get/itemById/")
+
+	var item Item
+
+	if id == "0" || id == "" {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Find the item in the data map
+	for _, v := range items {
+		if v.ID == id {
+			item = v
+			break
+		}
+	}
+	// If no item found send error
+	if item.ID == "" {
+		http.Error(w, "Item Not Found", http.StatusNotFound)
+		return
+	}
+
+	// Serialize the item to JSON and write it to the response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(item)
+
+}
+
 func main() {
 	http.HandleFunc("/post/items", handleAddItem)
 	http.HandleFunc("/get/items", handleGetItem)
+	http.HandleFunc("/get/itemById/", getItemById)
 
 	fmt.Printf("The server is running at port #%v", port)
 
