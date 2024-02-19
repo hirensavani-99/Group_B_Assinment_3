@@ -147,3 +147,50 @@ func TestGetItemHandlerNegative(t *testing.T) {
 		t.Errorf("Expected status code %d, got %d", http.StatusNotFound, rr.Code)
 	}
 }
+
+func TestGetItemById(t *testing.T) {
+
+	// Define some mock items to be returned by the handler
+	mockItems := []Item{
+		{ID: "1", Name: "Item 1", Description: "Description 1", Price: 20.99},
+		{ID: "2", Name: "Item 2", Description: "Description 2", Price: 20.99},
+	}
+
+	// Mock the global items slice with the mock items
+	items = mockItems
+
+	// Create a mock HTTP server
+	srv := httptest.NewServer(http.HandlerFunc(getItemById))
+	defer srv.Close()
+
+	// Prepare a request
+	req, err := http.NewRequest("GET", srv.URL+"/get/itemById/1", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+
+	// Send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("Request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response status code
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d", http.StatusOK, resp.StatusCode)
+	}
+
+	// Decode the response body
+	var item Item
+	if err := json.NewDecoder(resp.Body).Decode(&item); err != nil {
+		t.Fatalf("Failed to decode response body: %v", err)
+	}
+
+	// Validate the response
+	expectedID := "1" // Assuming this is the ID of the item in your test scenario
+	if item.ID != expectedID {
+		t.Errorf("Expected item ID to be %s, got %s", expectedID, item.ID)
+	}
+}
